@@ -13,6 +13,8 @@ TiempoActual = 0
 TiempoRestante = 0
 ruta_base = os.path.dirname(__file__)
 ruta_ico = os.path.join(ruta_base, "imagenes", "Nota musiacal.png")
+lista_canciones = []
+reproduciendo = 0
 
 #Funciones reproductor
 def Play():
@@ -42,7 +44,7 @@ def Vol_down():
         pygame.mixer.music.set_volume(volumen)
 
 def actualizar_tiempo():
-    global TiempoRestante, TiempoActual
+    global TiempoRestante, TiempoActual, reproduciendo, duracion
     actual = pygame.mixer.music.get_pos() / 1000
     if actual >= 0:
         TiempoActual = round(actual)
@@ -52,19 +54,30 @@ def actualizar_tiempo():
         min, seg = divmod(int(TiempoRestante), 60)
         Time2.config(text = f"{min:02d}:{seg:02d}")
         barra.set(TiempoActual)
+    if not pygame.mixer.music.get_busy() and not pausa:
+        reproduciendo += 1
+        if reproduciendo >= len(lista_canciones):
+            reproduciendo = 0
+        pygame.mixer.music.load(lista_canciones[reproduciendo])
+        duracion = pygame.mixer.Sound(lista_canciones[reproduciendo]).get_length()
+        barra.config(to = round(duracion))
+        Time2.config(text = "00:00")
+        name_music.config(text = f"Reproduciendo:\n{os.path.basename(lista_canciones[reproduciendo])}")
+        Play()
     v.after(1000, actualizar_tiempo)
 
 #Finciones Menu
 def Cargar():
     global duracion
-    ruta = filedialog.askopenfilename(filetypes = [("Archivos de audio", "*.mp3 *.wav")])
+    ruta = filedialog.askopenfilenames(filetypes = [("Archivos de audio", "*.mp3 *.wav")])
+    lista_canciones.extend(ruta)
     if ruta != "":
-        name_music.config(text = f"Reproduciendo:\n{os.path.basename(ruta)}")
-        duracion = pygame.mixer.Sound(ruta).get_length()
+        name_music.config(text = f"Reproduciendo:\n{os.path.basename(lista_canciones[reproduciendo])}")
+        duracion = pygame.mixer.Sound(lista_canciones[reproduciendo]).get_length()
         min, seg = divmod(int(duracion),60)
         Time2.config(text = f"{min:02d}:{seg:02d}")
         barra.config(to = round(duracion))
-    pygame.mixer.music.load(ruta)
+    pygame.mixer.music.load(lista_canciones[reproduciendo])
     actualizar_tiempo()    
 
 #Ventana principal
