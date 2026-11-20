@@ -11,6 +11,8 @@ volumen = 0.5
 duracion = 0
 TiempoActual = 0
 TiempoRestante = 0
+ruta_base = os.path.dirname(__file__)
+ruta_ico = os.path.join(ruta_base, "imagenes", "Nota musiacal.png")
 
 #Funciones reproductor
 def Play():
@@ -55,7 +57,7 @@ def actualizar_tiempo():
 #Finciones Menu
 def Cargar():
     global duracion
-    ruta = filedialog.askopenfilename(filetypes = [("Archivos de audio", "*.mp3")])
+    ruta = filedialog.askopenfilename(filetypes = [("Archivos de audio", "*.mp3 *.wav")])
     if ruta != "":
         name_music.config(text = f"Reproduciendo:\n{os.path.basename(ruta)}")
         duracion = pygame.mixer.Sound(ruta).get_length()
@@ -70,7 +72,7 @@ v = Tk()
 v.title("Reproductor de Música")
 v.geometry("1000x600")
 v.resizable(False, False)
-icon = PhotoImage(file = r"imagenes\Nota musiacal.png")
+icon = PhotoImage(file = ruta_ico)
 v.iconphoto(False, icon)
 
 #Menu
@@ -91,7 +93,7 @@ contenedor3 = Frame(v)
 contenedor3.pack(side = BOTTOM, fill = X, padx = 20)
 
 #Mostrar nombre de la canción
-name_music = Label(v, text = "Cargue una canción", font = ("Arial", 20), wraplength = 800, justify = "center")
+name_music = Label(v, text = "Cargué una canción", font = ("Arial", 20), wraplength = 800, justify = "center")
 name_music.pack(side = TOP)
 
 #Boton de play
